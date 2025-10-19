@@ -1,0 +1,287 @@
+/**
+ * JOJAM STUDIOS - Unified Stylesheet
+ * Cyberpunk-themed design system for all pages
+ */
+
+/* ==================== COLOR VARIABLES ==================== */
+:root {
+    --neon-blue: #00f3ff;
+    --neon-magenta: #ff00ff;
+    --neon-yellow: #ffff00;
+    --neon-green: #00ff00;
+    --dark-bg: #0a0a0a;
+    --dark-secondary: #1a1a2e;
+    --glass-bg: rgba(20, 20, 40, 0.8);
+    --glass-border: rgba(0, 243, 255, 0.3);
+}
+
+/* ==================== BASE STYLES ==================== */
+body {
+    background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-secondary) 100%);
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    min-height: 100vh;
+}
+
+/* ==================== GLASS CARD COMPONENT ==================== */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* ==================== TYPOGRAPHY ==================== */
+.neon-text {
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue);
+}
+
+/* ==================== BUTTONS ==================== */
+.btn-neon {
+    background: transparent;
+    border: 2px solid var(--neon-blue);
+    color: var(--neon-blue);
+    padding: 12px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-neon:hover {
+    background: var(--neon-blue);
+    color: black;
+    box-shadow: 0 0 20px var(--neon-blue);
+}
+
+/* ==================== FORM ELEMENTS ==================== */
+.form-control {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--neon-blue);
+    color: white;
+}
+
+.form-control:focus {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-color: var(--neon-magenta);
+    box-shadow: 0 0 10px var(--neon-magenta);
+}
+
+.form-control::placeholder {
+    color: #666;
+}
+
+.form-label {
+    color: var(--neon-blue);
+}
+
+/* ==================== NAVBAR ==================== */
+.navbar-custom {
+    background: rgba(20, 20, 40, 0.9);
+    border-bottom: 2px solid var(--neon-blue);
+}
+
+.navbar-dark {
+    background: rgba(20, 20, 40, 0.9);
+    border-bottom: 2px solid var(--neon-magenta);
+}
+
+/* ==================== TABLES ==================== */
+.table-dark {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.table-dark td, 
+.table-dark th {
+    border-color: rgba(0, 243, 255, 0.2);
+}
+
+/* ==================== BADGES ==================== */
+.badge-pending {
+    background: var(--neon-yellow);
+    color: black;
+}
+
+.badge-accepted {
+    background: var(--neon-green);
+    color: black;
+}
+
+.badge-declined {
+    background: #ff0000;
+    color: white;
+}
+
+/* ==================== CALENDAR STYLES ==================== */
+.calendar th {
+    background: rgba(0, 243, 255, 0.2);
+    padding: 15px;
+    text-align: center;
+    color: var(--neon-blue);
+    border: 1px solid var(--glass-border);
+}
+
+.calendar td {
+    padding: 10px;
+    height: 120px;
+    vertical-align: top;
+    border: 1px solid rgba(0, 243, 255, 0.2);
+}
+
+.calendar td.other-month {
+    background: rgba(0, 0, 0, 0.3);
+    color: #555;
+}
+
+.calendar td.today {
+    background: rgba(0, 243, 255, 0.15);
+    border: 2px solid var(--neon-blue);
+}
+
+.calendar td.has-booking {
+    background: rgba(255, 0, 255, 0.1);
+}
+
+.day-number {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.booking-item {
+    font-size: 0.75rem;
+    padding: 3px 6px;
+    margin: 2px 0;
+    background: rgba(0, 243, 255, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.booking-item:hover {
+    background: rgba(0, 243, 255, 0.6);
+}
+
+.booking-item.pending {
+    background: rgba(255, 255, 0, 0.3);
+}
+
+.booking-item.accepted {
+    background: rgba(0, 255, 0, 0.3);
+}
+
+/* ==================== MODAL STYLES ==================== */
+.modal-content {
+    background: rgba(20, 20, 40, 0.95);
+    border: 1px solid var(--neon-blue);
+    color: white;
+}
+
+.btn-close-white {
+    filter: invert(1);
+}
+
+/* ==================== ALERTS ==================== */
+.alert-info-custom {
+    background: rgba(0, 243, 255, 0.1);
+    border: 1px solid var(--neon-blue);
+    color: white;
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+.text-muted-custom {
+    color: #888;
+}
+
+.text-link-magenta {
+    color: var(--neon-magenta);
+    text-decoration: none;
+}
+
+.text-link-magenta:hover {
+    color: var(--neon-magenta);
+    text-decoration: underline;
+}
+
+.text-link-blue {
+    color: var(--neon-blue);
+    text-decoration: none;
+}
+
+.text-link-blue:hover {
+    color: var(--neon-blue);
+    text-decoration: underline;
+}
+
+/* ==================== RESPONSIVE ADJUSTMENTS ==================== */
+@media (max-width: 768px) {
+    .glass-card {
+        padding: 15px;
+    }
+    
+    .calendar td {
+        height: 80px;
+        padding: 5px;
+    }
+    
+    .day-number {
+        font-size: 1rem;
+    }
+    
+    .booking-item {
+        font-size: 0.65rem;
+        padding: 2px 4px;
+    }
+}
+
+
+
+
+/* ==================== ADMIN ACCEPT/DECLINE BUTTONS ==================== */
+.btn-accept {
+    background: transparent;
+    border: 2px solid var(--neon-green);
+    color: var(--neon-green);
+    font-size: 0.875rem;
+    padding: 5px 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-accept:hover {
+    background: var(--neon-green);
+    color: black;
+    box-shadow: 0 0 15px var(--neon-green);
+}
+
+.btn-decline {
+    background: transparent;
+    border: 2px solid #ff0000;
+    color: #ff0000;
+    font-size: 0.875rem;
+    padding: 5px 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-decline:hover {
+    background: #ff0000;
+    color: white;
+    box-shadow: 0 0 15px #ff0000;
+}
+
+/* ==================== USER DASHBOARD PDF DOWNLOAD BUTTON ==================== */
+.btn-download {
+    background: transparent;
+    border: 2px solid var(--neon-magenta);
+    color: var(--neon-magenta);
+    font-size: 0.875rem;
+    padding: 5px 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-download:hover {
+    background: var(--neon-magenta);
+    color: black;
+    box-shadow: 0 0 15px var(--neon-magenta);
+}

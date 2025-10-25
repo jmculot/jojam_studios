@@ -71,57 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login - JOJAM STUDIOS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="jojam-styles.css">
 
-    <style>
-        :root {
-            --neon-blue: #00f3ff;
-            --neon-magenta: #ff00ff;
-            --neon-yellow: #fff000;
-        }
-        body {
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-            color: white;
-            font-family: 'Orbitron', sans-serif;
-            min-height: 100vh;
-        }
-        .glass-card {
-            background: rgba(20, 20, 40, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 243, 255, 0.3);
-            border-radius: 15px;
-            padding: 40px;
-        }
-        .neon-text {
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px var(--neon-blue);
-        }
-        .form-control {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--neon-blue);
-            color: white;
-        }
-        .form-control:focus {
-            background: rgba(0, 0, 0, 0.7);
-            border-color: var(--neon-magenta);
-            box-shadow: 0 0 10px var(--neon-magenta);
-        }
-        .btn-neon {
-            background: transparent;
-            border: 2px solid var(--neon-blue);
-            color: var(--neon-blue);
-            padding: 12px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        .btn-neon:hover {
-            background: var(--neon-blue);
-            color: black;
-            box-shadow: 0 0 20px var(--neon-blue);
-        }
-        .form-label {
-            color: var(--neon-blue);
-        }
-    </style>
+    
 </head>
 <body>
     <div class="container">

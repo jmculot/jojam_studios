@@ -1,74 +1,60 @@
 <?php
 /**
- * JOJAM STUDIOS - Receipt Generator (FINAL FIXED VERSION)
+ * JOJAM STUDIOS - Receipt Generator (Fixed)
  * Generates PDF receipts for accepted reservations
  * Uses FPDF library (http://www.fpdf.org/)
  */
 
-ob_start();
-
 require_once 'config.php';
-require_once 'fpdf186/fpdf.php';
+require_once 'fpdf/fpdf.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
+// ✅ Ensure user is logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit();
 }
 
+// ✅ Get reservation ID safely
 $reservation_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
 if ($reservation_id <= 0) {
-    die('Invalid reservation ID.');
+    die('⚠️ Invalid reservation ID.');
 }
 
+// ✅ Fetch reservation + user details
 $sql = "
-    SELECT r.*, u.username, u.email, u.contact_number
-    FROM reservations r
-    INNER JOIN users u ON r.user_id = u.id
+    SELECT r.*, u.username, u.email, u.contact_number 
+    FROM reservations r 
+    INNER JOIN users u ON r.user_id = u.id 
     WHERE r.id = ?
 ";
 
 $stmt = $conn->prepare($sql);
-if ($stmt === false) {
-    die('Database prepare error.');
-}
 $stmt->bind_param("i", $reservation_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $reservation = $result->fetch_assoc();
 
 if (!$reservation) {
-    die('Reservation not found.');
+    die('⚠️ Reservation not found!');
 }
 
-if (isset($_SESSION['role']) && $_SESSION['role'] !== 'admin') {
-    if ($reservation['user_id'] != $_SESSION['user_id']) {
-        die('Access denied.');
-    }
-} elseif (!isset($_SESSION['role']) && $reservation['user_id'] != $_SESSION['user_id']) {
-    die('Access denied.');
+// ✅ Security: users can only view their own receipts (unless admin)
+if (!isAdmin() && $reservation['user_id'] != $_SESSION['user_id']) {
+    die('⚠️ Access denied!');
 }
 
+// ✅ Only generate if status is accepted
 if (strtolower($reservation['status']) !== 'accepted') {
-    die('Receipt can only be generated for accepted reservations.');
+    die('⚠️ Receipt can only be generated for accepted reservations!');
 }
 
-// Clear any buffered output before generating PDF
-ob_clean();
-
+// ✅ Start PDF Generation
 $pdf = new FPDF();
 $pdf->AddPage();
 
-// Optional logo if exists
-if (file_exists('fpdf186/logo.png')) {
-    $pdf->Image('fpdf186/logo.png', 10, 10, 30);
-    $pdf->Ln(20);
-}
-
-$pdf->SetDrawColor(0, 243, 255);
+// --- Header ---
+$pdf->SetDrawColor(0, 243, 255); // Neon cyan border
 $pdf->SetTextColor(0, 0, 0);
 $pdf->SetFont('Arial', 'B', 24);
 $pdf->Cell(0, 15, 'JOJAM STUDIOS', 0, 1, 'C');
@@ -77,10 +63,9 @@ $pdf->SetFont('Arial', '', 12);
 $pdf->Cell(0, 10, 'Band Studio Reservation Receipt', 0, 1, 'C');
 $pdf->Ln(10);
 
-// Reservation details
+// --- Reservation Details ---
 $pdf->SetFont('Arial', 'B', 14);
-$pdf->SetFillColor(0, 243, 255);
-$pdf->Cell(0, 10, 'RESERVATION DETAILS', 1, 1, 'C', true);
+$pdf->Cell(0, 10, 'RESERVATION DETAILS', 1, 1, 'C');
 
 $pdf->SetFont('Arial', '', 11);
 $pdf->Cell(60, 8, 'Receipt No:', 1, 0);
@@ -93,17 +78,16 @@ $pdf->Cell(60, 8, 'Status:', 1, 0);
 $pdf->Cell(0, 8, strtoupper($reservation['status']), 1, 1);
 $pdf->Ln(5);
 
-// Customer information
+// --- Customer Info ---
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->SetFillColor(220, 240, 255);
-$pdf->Cell(0, 10, 'CUSTOMER INFORMATION', 1, 1, 'L', true);
+$pdf->Cell(0, 10, 'CUSTOMER INFORMATION', 1, 1, 'L');
 
 $pdf->SetFont('Arial', '', 11);
 $pdf->Cell(60, 8, 'Band Name:', 1, 0);
-$pdf->Cell(0, 8, utf8_decode($reservation['band_name']), 1, 1);
+$pdf->Cell(0, 8, $reservation['band_name'], 1, 1);
 
 $pdf->Cell(60, 8, 'Contact Person:', 1, 0);
-$pdf->Cell(0, 8, utf8_decode($reservation['username']), 1, 1);
+$pdf->Cell(0, 8, $reservation['username'], 1, 1);
 
 $pdf->Cell(60, 8, 'Email:', 1, 0);
 $pdf->Cell(0, 8, $reservation['email'], 1, 1);
@@ -112,10 +96,9 @@ $pdf->Cell(60, 8, 'Contact Number:', 1, 0);
 $pdf->Cell(0, 8, $reservation['contact_number'], 1, 1);
 $pdf->Ln(5);
 
-// Booking information
+// --- Booking Info ---
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->SetFillColor(220, 240, 255);
-$pdf->Cell(0, 10, 'BOOKING INFORMATION', 1, 1, 'L', true);
+$pdf->Cell(0, 10, 'BOOKING INFORMATION', 1, 1, 'L');
 
 $pdf->SetFont('Arial', '', 11);
 $pdf->Cell(60, 8, 'Session Type:', 1, 0);
@@ -132,26 +115,25 @@ $pdf->Cell(60, 8, 'Number of Members:', 1, 0);
 $pdf->Cell(0, 8, $reservation['members'], 1, 1);
 
 $pdf->Cell(60, 8, 'Member Roles:', 1, 0);
-$pdf->Cell(0, 8, utf8_decode($reservation['roles']), 1, 1);
+$pdf->Cell(0, 8, $reservation['roles'], 1, 1);
 $pdf->Ln(5);
 
-// Payment information
+// --- Payment Info ---
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->SetFillColor(220, 240, 255);
-$pdf->Cell(0, 10, 'PAYMENT INFORMATION', 1, 1, 'L', true);
+$pdf->Cell(0, 10, 'PAYMENT INFORMATION', 1, 1, 'L');
 
 $pdf->SetFont('Arial', 'B', 14);
 $pdf->Cell(60, 10, 'Total Amount:', 1, 0);
-$pdf->Cell(0, 10, '₱ ' . number_format($reservation['total_price'], 2), 1, 1);
+$pdf->Cell(0, 10, 'PHP ' . number_format($reservation['total_price'], 2), 1, 1);
+
 $pdf->Ln(10);
 
-// Footer
+// --- Footer ---
 $pdf->SetFont('Arial', 'I', 10);
 $pdf->Cell(0, 10, 'Thank you for choosing JOJAM STUDIOS!', 0, 1, 'C');
 $pdf->Cell(0, 10, 'For inquiries, email us at contact@jojamstudios.com', 0, 1, 'C');
-$pdf->Ln(5);
-$pdf->Cell(0, 10, 'This is a system-generated receipt. No signature required.', 0, 1, 'C');
 
-// Output PDF inline
+// ✅ Output the PDF
 $pdf->Output('I', 'JOJAM_Receipt_' . $reservation['id'] . '.pdf');
 exit;
+?>

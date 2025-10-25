@@ -157,3 +157,8 @@ $pdf->Cell(0, 10, 'This is a system-generated receipt. No signature required.', 
 // ✅ Output the PDF (I = inline, D = download)
 $pdf->Output('I', 'JOJAM_Receipt_' . $reservation['id'] . '.pdf');
 exit;
+
+
+
+
+*// lates code 

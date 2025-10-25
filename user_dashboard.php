@@ -28,11 +28,17 @@ try {
     $stmt->execute();
     $upcoming = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-    // Get pricing information
+    // ✅ FIXED: Safely load pricing info
     $pricing = [];
     $result = $conn->query("SELECT type, price FROM pricing");
-    while ($row = $result->fetch_assoc()) {
-        $pricing[$row['type']] = $row['price'];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $type = isset($row['type']) ? $row['type'] : null;
+            $price = isset($row['price']) ? (float)$row['price'] : 0.0;
+            if ($type !== null) {
+                $pricing[$type] = $price;
+            }
+        }
     }
 
 } catch (Exception $e) {
@@ -134,7 +140,7 @@ try {
                                     <td><?= date('M d, Y', strtotime($res['date'])) ?></td>
                                     <td><?= date('h:i A', strtotime($res['start_time'])) . ' - ' . date('h:i A', strtotime($res['end_time'])) ?></td>
                                     <td><?= ucfirst($res['type']) ?></td>
-                                    <td>₱<?= number_format($res['total_price'], 2) ?></td>
+                                    <td>₱<?= number_format($res['total_price'] ?? 0, 2) ?></td>
                                     <td>
                                         <span class="badge badge-<?= $res['status'] ?>">
                                             <?= strtoupper($res['status']) ?>
@@ -204,8 +210,8 @@ try {
                         <div class="mb-3">
                             <label class="form-label" style="color: var(--neon-blue);">Session Type</label>
                             <select name="type" class="form-control" id="sessionType" required>
-                                <option value="practice">Band Practice (₱<?= number_format($pricing['practice'], 2); ?>/hour)</option>
-                                <option value="recording">Recording Session (₱<?= number_format($pricing['recording'], 2); ?>/hour)</option>
+                                <option value="practice">Band Practice (₱<?= number_format($pricing['practice'] ?? 0, 2); ?>/hour)</option>
+                                <option value="recording">Recording Session (₱<?= number_format($pricing['recording'] ?? 0, 2); ?>/hour)</option>
                             </select>
                         </div>
                         <div class="mb-3">

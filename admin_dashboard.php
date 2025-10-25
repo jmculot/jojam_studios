@@ -207,7 +207,7 @@ $pricing = $conn->query("SELECT * FROM pricing")->fetch_all(MYSQLI_ASSOC);
                     <tr>
                         <form method="POST">
                             <td><?= ucfirst($p['type']) ?></td>
-                            <td>₱<?= number_format($p['price'], 2) ?></td>
+                            <td>₱<?= number_format($p['price_per_hour'], 2) ?></td>
                             <td>
                                 <div class="input-group">
                                     <input type="hidden" name="type" value="<?= $p['type'] ?>">

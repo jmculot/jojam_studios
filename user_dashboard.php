@@ -30,11 +30,11 @@ try {
 
     // ✅ FIXED: Safely load pricing info
     $pricing = [];
-    $result = $conn->query("SELECT type, price FROM pricing");
+    $result = $conn->query("SELECT type, price_per_hour FROM pricing");
     if ($result) {
         while ($row = $result->fetch_assoc()) {
             $type = isset($row['type']) ? $row['type'] : null;
-            $price = isset($row['price']) ? (float)$row['price'] : 0.0;
+            $price = isset($row['price_per_hour']) ? (float)$row['price_per_hour'] : 0.0;
             if ($type !== null) {
                 $pricing[$type] = $price;
             }
@@ -66,6 +66,9 @@ try {
             background: var(--neon-magenta);
             color: black;
         }
+        .role-select {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -81,6 +84,15 @@ try {
 
     <div class="container mt-4">
         <h2 class="neon-text mb-4">USER DASHBOARD</h2>
+
+        <!-- Display Messages -->
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success"><?php echo $_SESSION['success']; unset($_SESSION['success']); ?></div>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger"><?php echo $_SESSION['error']; unset($_SESSION['error']); ?></div>
+        <?php endif; ?>
 
         <div class="row mb-4">
             <div class="col-md-12">
@@ -193,7 +205,7 @@ try {
                     <h5 class="modal-title neon-text">New Reservation</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="create_reservation.php" method="POST">
+                <form action="create_reservation.php" method="POST" id="reservationForm">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label" style="color: var(--neon-blue);">Band Name</label>
@@ -201,11 +213,14 @@ try {
                         </div>
                         <div class="mb-3">
                             <label class="form-label" style="color: var(--neon-blue);">Number of Members</label>
-                            <input type="number" name="members" class="form-control" min="1" required>
+                            <input type="number" id="members" name="members" class="form-control" min="1" required onchange="generateRoleSelects()">
                         </div>
                         <div class="mb-3">
                             <label class="form-label" style="color: var(--neon-blue);">Member Roles</label>
-                            <input type="text" name="roles" class="form-control" placeholder="e.g., Lead Guitar, Drums, Vocals" required>
+                            <div id="roleContainer">
+                                <!-- Role selects will be generated here -->
+                            </div>
+                            <input type="hidden" id="rolesHidden" name="roles">
                         </div>
                         <div class="mb-3">
                             <label class="form-label" style="color: var(--neon-blue);">Session Type</label>
@@ -246,6 +261,66 @@ try {
         function viewDetails(id) {
             window.location.href = 'view_reservation.php?id=' + id;
         }
+        
+        function generateRoleSelects() {
+            const numMembers = document.getElementById('members').value;
+            const container = document.getElementById('roleContainer');
+            container.innerHTML = ''; // Clear existing selects
+            
+            for (let i = 0; i < numMembers; i++) {
+                const selectWrapper = document.createElement('div');
+                selectWrapper.className = 'mb-2';
+                
+                const label = document.createElement('label');
+                label.className = 'form-label';
+                label.style.color = 'var(--neon-blue)';
+                label.textContent = `Member ${i + 1} Role`;
+                
+                const select = document.createElement('select');
+                select.className = 'form-control role-select';
+                select.required = true;
+                
+                const roles = ['Vocalist', 'Guitarist', 'Bassist', 'Drummer', 'Keyboardist'];
+                roles.forEach(role => {
+                    const option = document.createElement('option');
+                    option.value = role;
+                    option.textContent = role;
+                    select.appendChild(option);
+                });
+                
+                selectWrapper.appendChild(label);
+                selectWrapper.appendChild(select);
+                container.appendChild(selectWrapper);
+            }
+        }
+
+        function combineRoles() {
+            const roleSelects = document.querySelectorAll('.role-select');
+            const roles = Array.from(roleSelects).map(select => select.value);
+            document.getElementById('rolesHidden').value = roles.join(', ');
+            return true;
+        }
+        
+        // Ensure roles are combined on form submit
+        document.getElementById('reservationForm').addEventListener('submit', function(e) {
+            if (!combineRoles()) {
+                e.preventDefault();
+                alert('Please select roles for all members');
+                return false;
+            }
+            
+            // Validate time range
+            const startTime = document.querySelector('input[name="start_time"]').value;
+            const endTime = document.querySelector('input[name="end_time"]').value;
+            
+            if (startTime >= endTime) {
+                e.preventDefault();
+                alert('End time must be after start time');
+                return false;
+            }
+            
+            return true;
+        });
     </script>
 </body>
 </html>

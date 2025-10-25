@@ -12,16 +12,48 @@ requireLogin();
 // Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // Get form data
-    $members    = intval($_POST['members']);
-    $roles      = trim($_POST['roles']);
-    $type       = $_POST['type'];
-    $date       = $_POST['date'];
-    $start_time = $_POST['start_time'];
-    $end_time   = $_POST['end_time'];
+    // Get form data with validation
+    $members    = isset($_POST['members']) ? intval($_POST['members']) : 0;
+    $roles      = isset($_POST['roles']) ? trim($_POST['roles']) : '';
+    $type       = isset($_POST['type']) ? $_POST['type'] : '';
+    $date       = isset($_POST['date']) ? $_POST['date'] : '';
+    $start_time = isset($_POST['start_time']) ? $_POST['start_time'] : '';
+    $end_time   = isset($_POST['end_time']) ? $_POST['end_time'] : '';
 
     try {
-        // --- Get price per hour for the selected session type ---
+        // Validate required fields
+        if (empty($members) || empty($roles) || empty($type) || empty($date) || empty($start_time) || empty($end_time)) {
+            $_SESSION['error'] = 'All fields are required.';
+            header('Location: user_dashboard.php');
+            exit();
+        }
+
+        if ($members < 1) {
+            $_SESSION['error'] = 'Number of members must be at least 1.';
+            header('Location: user_dashboard.php');
+            exit();
+        }
+
+        // Validate date is not in the past
+        $selectedDate = new DateTime($date);
+        $today = new DateTime();
+        $today->setTime(0, 0, 0);
+        
+        if ($selectedDate < $today) {
+            $_SESSION['error'] = 'Please select a future date.';
+            header('Location: user_dashboard.php');
+            exit();
+        }
+
+        // Validate time range
+        if ($start_time >= $end_time) {
+            $_SESSION['error'] = 'End time must be after start time.';
+            header('Location: user_dashboard.php');
+            exit();
+        }
+
+        // --- Get price for the selected session type ---
+        // Try both possible column names
         $stmt = $conn->prepare("SELECT price_per_hour FROM pricing WHERE type = ?");
         $stmt->bind_param("s", $type);
         $stmt->execute();

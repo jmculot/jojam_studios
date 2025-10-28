@@ -135,11 +135,14 @@ if ($next_month > 12) {
 
                             if ($has_bookings) {
                                 foreach ($calendar_data[$current_date] as $booking) {
-                                    $time = date('h:i A', strtotime($booking['start_time']));
+                                    $start = date('h:i A', strtotime($booking['start_time']));
+                                    $end   = date('h:i A', strtotime($booking['end_time']));
                                     $status_class = $booking['status'];
+
                                     echo "<div class='booking-item $status_class' onclick='viewBooking({$booking['id']})'>";
-                                    echo htmlspecialchars($time . ' - ' . $booking['band_name']);
+                                    echo htmlspecialchars("{$start} - {$end} | {$booking['band_name']}");
                                     echo "</div>";
+
                                 }
                             }
                             echo "</td>";

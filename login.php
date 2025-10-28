@@ -72,52 +72,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="jojam-styles.css">
-
-    
 </head>
 <body>
     <div class="container">
         <div class="row min-vh-100 align-items-center justify-content-center">
-            <div class="col-lg-5 col-md-7">
-                <div class="glass-card">
-                    <h2 class="neon-text text-center mb-4">ACCESS SYSTEM</h2>
+            <div class="col-lg-10 col-xl-9">
+                <div class="row align-items-center">
+                    <!-- Left Side - Logo -->
+                    <div class="col-md-6 text-center mb-4 mb-md-0">
+                        <img src="jojam-logo.png" alt="JOJAM STUDIOS" class="img-fluid logo-image" style="max-width: 490px; filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.5)); margin-bottom: 20px; border-radius: 10px;">
+                    </div>
+                    
+                    <!-- Right Side - Login Form -->
+                    <div class="col-md-6">
+                        <div class="glass-card">
+                            <h2 class="neon-text text-center mb-4">ACCESS SYSTEM</h2>
 
-                    <?php if (!empty($error)): ?>
-                        <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
-                    <?php endif; ?>
+                            <?php if (!empty($error)): ?>
+                                <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+                            <?php endif; ?>
 
-                    <form method="POST" action="">
-                        <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input type="text" name="username" class="form-control" required
-                                   value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>">
+                            <form method="POST" action="">
+                                <div class="mb-3">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" name="username" class="form-control" required
+                                           value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Password</label>
+                                    <input type="password" name="password" class="form-control" required>
+                                </div>
+
+                                <button type="submit" class="btn btn-neon w-100 mb-3">LOGIN</button>
+
+                                <div class="text-center">
+                                    <p style="color: #aaa;">Don't have an account?
+                                        <a href="register.php" style="color: var(--neon-magenta);">Register here</a>
+                                    </p>
+                                </div>
+                            </form>
+
+                            <div class="mt-4 p-3" style="background: rgba(0, 243, 255, 0.1); border-radius: 10px; border: 1px solid var(--neon-blue);">
+                                <p class="mb-2" style="color: var(--neon-yellow); font-size: 0.9rem;">
+                                    <strong>Test Credentials:</strong>
+                                </p>
+                                <p class="mb-1" style="color: #aaa; font-size: 0.85rem;">
+                                    Admin: <strong>admin</strong> / password
+                                </p>
+                                <p class="mb-0" style="color: #aaa; font-size: 0.85rem;">
+                                    User: <strong>testuser</strong> / password
+                                </p>
+                            </div>
                         </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" required>
-                        </div>
-
-                        <button type="submit" class="btn btn-neon w-100 mb-3">LOGIN</button>
-
-                        <div class="text-center">
-                            <p style="color: #aaa;">Don't have an account?
-                                <a href="register.php" style="color: var(--neon-magenta);">Register here</a>
-                            </p>
-                            
-                        </div>
-                    </form>
-
-                    <div class="mt-4 p-3" style="background: rgba(0, 243, 255, 0.1); border-radius: 10px; border: 1px solid var(--neon-blue);">
-                        <p class="mb-2" style="color: var(--neon-yellow); font-size: 0.9rem;">
-                            <strong>Test Credentials:</strong>
-                        </p>
-                        <p class="mb-1" style="color: #aaa; font-size: 0.85rem;">
-                            Admin: <strong>admin</strong> / password
-                        </p>
-                        <p class="mb-0" style="color: #aaa; font-size: 0.85rem;">
-                            User: <strong>testuser</strong> / password
-                        </p>
                     </div>
                 </div>
             </div>

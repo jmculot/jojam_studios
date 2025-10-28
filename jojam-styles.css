@@ -39,6 +39,78 @@ body {
     text-shadow: 0 0 10px var(--neon-blue);
 }
 
+/* ==================== LOGO STYLES ==================== */
+.glass-card-container {
+    display: flex;
+    align-items: stretch;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+}
+
+.glass-card-left {
+    flex: 1;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-right: none;
+    border-radius: 15px 0 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    position: relative;
+}
+
+.glass-card-left::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, 
+        transparent, 
+        var(--neon-blue) 20%, 
+        var(--neon-blue) 80%, 
+        transparent
+    );
+    box-shadow: 0 0 10px var(--neon-blue);
+}
+
+.glass-card-right {
+    flex: 1;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-left: none;
+    border-radius: 0 15px 15px 0;
+    padding: 40px;
+}
+
+.logo-image {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    animation: float 3s ease-in-out infinite;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.5));
+}
+
+.logo-image:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 30px rgba(0, 243, 255, 0.8));
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
 /* ==================== BUTTONS ==================== */
 .btn-neon {
     background: transparent;
@@ -215,30 +287,6 @@ body {
     text-decoration: underline;
 }
 
-/* ==================== RESPONSIVE ADJUSTMENTS ==================== */
-@media (max-width: 768px) {
-    .glass-card {
-        padding: 15px;
-    }
-    
-    .calendar td {
-        height: 80px;
-        padding: 5px;
-    }
-    
-    .day-number {
-        font-size: 1rem;
-    }
-    
-    .booking-item {
-        font-size: 0.65rem;
-        padding: 2px 4px;
-    }
-}
-
-
-
-
 /* ==================== ADMIN ACCEPT/DECLINE BUTTONS ==================== */
 .btn-accept {
     background: transparent;
@@ -284,4 +332,62 @@ body {
     background: var(--neon-magenta);
     color: black;
     box-shadow: 0 0 15px var(--neon-magenta);
+}
+
+/* ==================== RESPONSIVE ADJUSTMENTS ==================== */
+@media (max-width: 768px) {
+    .glass-card {
+        padding: 15px;
+    }
+    
+    .glass-card-container {
+        flex-direction: column;
+    }
+    
+    .glass-card-left {
+        border-radius: 15px 15px 0 0;
+        border-right: 1px solid var(--glass-border);
+        border-bottom: none;
+        padding: 30px;
+    }
+    
+    .glass-card-left::after {
+        right: 0;
+        left: 0;
+        top: auto;
+        bottom: 0;
+        width: auto;
+        height: 1px;
+        background: linear-gradient(to right, 
+            transparent, 
+            var(--neon-blue) 20%, 
+            var(--neon-blue) 80%, 
+            transparent
+        );
+    }
+    
+    .glass-card-right {
+        border-radius: 0 0 15px 15px;
+        border-left: 1px solid var(--glass-border);
+        border-top: none;
+        padding: 30px;
+    }
+    
+    .logo-image {
+        max-width: 250px;
+    }
+    
+    .calendar td {
+        height: 80px;
+        padding: 5px;
+    }
+    
+    .day-number {
+        font-size: 1rem;
+    }
+    
+    .booking-item {
+        font-size: 0.65rem;
+        padding: 2px 4px;
+    }
 }

@@ -104,9 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <p style="color: #aaa;">Don't have an account?
                                 <a href="register.php" style="color: var(--neon-magenta);">Register here</a>
                             </p>
-                            <p style="color: #aaa;">
-                                <a href="index.php" style="color: var(--neon-blue);">← Back to Home</a>
-                            </p>
+                            
                         </div>
                     </form>
 

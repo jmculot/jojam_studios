@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 19, 2025 at 12:05 PM
+-- Generation Time: Oct 28, 2025 at 04:04 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -45,16 +45,17 @@ CREATE TABLE `pricing` (
   `id` int(11) NOT NULL,
   `type` enum('recording','practice') NOT NULL,
   `price_per_hour` decimal(10,2) NOT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `price` decimal(10,2) NOT NULL DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pricing`
 --
 
-INSERT INTO `pricing` (`id`, `type`, `price_per_hour`, `updated_at`) VALUES
-(1, 'recording', 500.00, '2025-10-11 09:32:04'),
-(2, 'practice', 300.00, '2025-10-11 09:32:04');
+INSERT INTO `pricing` (`id`, `type`, `price_per_hour`, `updated_at`, `price`) VALUES
+(1, 'recording', 500.00, '2025-10-11 09:32:04', 0.00),
+(2, 'practice', 250.00, '2025-10-28 03:03:40', 250.00);
 
 -- --------------------------------------------------------
 
@@ -70,9 +71,9 @@ CREATE TABLE `reservations` (
   `start_time` time NOT NULL,
   `end_time` time NOT NULL,
   `members` int(11) NOT NULL,
-  `roles` text NOT NULL,
+  `roles` varchar(255) DEFAULT NULL,
   `type` enum('recording','practice') NOT NULL,
-  `total_price` decimal(10,2) NOT NULL,
+  `total_price` double DEFAULT NULL,
   `status` enum('pending','accepted','declined') DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -82,8 +83,8 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`id`, `user_id`, `band_name`, `date`, `start_time`, `end_time`, `members`, `roles`, `type`, `total_price`, `status`, `created_at`) VALUES
-(3, 4, 'acdc', '2025-10-12', '19:20:00', '22:20:00', 5, '0', 'recording', 1500.00, 'accepted', '2025-10-11 10:20:09'),
-(4, 4, 'acdc', '2025-12-12', '10:33:00', '12:33:00', 2, '0', 'recording', 1000.00, 'declined', '2025-10-12 14:33:39');
+(3, 4, 'acdc', '2025-10-12', '19:20:00', '22:20:00', 5, '0', 'recording', 1500, 'accepted', '2025-10-11 10:20:09'),
+(5, 4, 'acdc', '2025-10-28', '10:00:00', '11:00:00', 3, '0', 'practice', 300, 'pending', '2025-10-28 02:04:37');
 
 -- --------------------------------------------------------
 
@@ -164,7 +165,7 @@ ALTER TABLE `pricing`
 -- AUTO_INCREMENT for table `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`

@@ -9,6 +9,26 @@ require_once 'config.php';
 // Ensure user is logged in
 requireLogin();
 
+// ✅ Handle delete request (via ?delete_reservation=ID)
+if (isset($_GET['delete_reservation'])) {
+    $delete_id = intval($_GET['delete_reservation']);
+    $user_id = $_SESSION['user_id'];
+
+    // Delete only the user's own reservation
+    $stmt = $conn->prepare("DELETE FROM reservations WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $delete_id, $user_id);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        $_SESSION['success'] = "Reservation deleted successfully.";
+    } else {
+        $_SESSION['error'] = "Failed to delete reservation. It may not exist or belong to you.";
+    }
+
+    header("Location: " . strtok($_SERVER["REQUEST_URI"], '?')); // Refresh without query
+    exit();
+}
+
 // If user is admin, redirect to admin dashboard
 if (isAdmin()) {
     header('Location: admin_dashboard.php');
@@ -176,6 +196,14 @@ try {
                                                     ✗ Declined
                                                 </span>
                                             <?php endif; ?>
+
+                                            <a href="?delete_reservation=<?= $res['id'] ?>" 
+                                            class="btn btn-danger btn-sm" 
+                                            onclick="return confirm('Delete this reservation?')">
+                                            🗑️ Delete
+                                            </a>
+
+                                            
                                         </div>
                                     </td>
                                 </tr>

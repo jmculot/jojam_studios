@@ -43,12 +43,16 @@ if (isset($_GET['decline_reservation'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_price'])) {
     $type = $_POST['type'];
     $price = floatval($_POST['price']);
-    $stmt = $conn->prepare("UPDATE pricing SET price = ? WHERE type = ?");
-    $stmt->bind_param('ds', $price, $type);
+
+    // ✅ Fix: column name is 'price_per_hour' (not 'price')
+    $stmt = $conn->prepare("UPDATE pricing SET price_per_hour = ? WHERE type = ?");
+    $stmt->bind_param("ds", $price, $type);
     $stmt->execute();
+
     header("Location: admin_dashboard.php?pricing_updated=1");
     exit();
 }
+
 
 // Dashboard Statistics
 $total_users = $conn->query("SELECT COUNT(*) AS total FROM users WHERE role = 'user'")->fetch_assoc()['total'];

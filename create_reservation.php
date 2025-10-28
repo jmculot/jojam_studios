@@ -15,13 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get form data with validation
     $members    = isset($_POST['members']) ? intval($_POST['members']) : 0;
     $roles      = isset($_POST['roles']) ? trim($_POST['roles']) : '';
-    $type       = isset($_POST['type']) ? $_POST['type'] : '';
-    $date       = isset($_POST['date']) ? $_POST['date'] : '';
-    $start_time = isset($_POST['start_time']) ? $_POST['start_time'] : '';
-    $end_time   = isset($_POST['end_time']) ? $_POST['end_time'] : '';
+    $type       = isset($_POST['type']) ? trim($_POST['type']) : '';
+    $date       = isset($_POST['date']) ? trim($_POST['date']) : '';
+    $start_time = isset($_POST['start_time']) ? trim($_POST['start_time']) : '';
+    $end_time   = isset($_POST['end_time']) ? trim($_POST['end_time']) : '';
 
     try {
-        // Validate required fields
+        // === VALIDATIONS ===
         if (empty($members) || empty($roles) || empty($type) || empty($date) || empty($start_time) || empty($end_time)) {
             $_SESSION['error'] = 'All fields are required.';
             header('Location: user_dashboard.php');
@@ -52,8 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
 
-        // --- Get price for the selected session type ---
-        // Try both possible column names
+        // === GET PRICE FOR SELECTED TYPE ===
         $stmt = $conn->prepare("SELECT price_per_hour FROM pricing WHERE type = ?");
         $stmt->bind_param("s", $type);
         $stmt->execute();
@@ -69,11 +68,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $price_per_hour = floatval($row['price_per_hour']);
         $stmt->close();
 
-        // --- Calculate duration and total price ---
+        // === CALCULATE DURATION & TOTAL PRICE ===
         $start = new DateTime($start_time);
         $end   = new DateTime($end_time);
         $duration = $start->diff($end);
-        $hours = $duration->h + ($duration->i / 60); // convert minutes to decimal hours
+        $hours = $duration->h + ($duration->i / 60); // convert minutes to hours
 
         if ($hours <= 0) {
             $_SESSION['error'] = 'Invalid time range selected.';
@@ -83,16 +82,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $total_price = $hours * $price_per_hour;
 
-        // --- Check for overlapping reservations ---
+        // === CHECK FOR OVERLAPPING RESERVATIONS ===
         $stmt = $conn->prepare("
-            SELECT COUNT(*) AS count FROM reservations 
+            SELECT COUNT(*) AS count 
+            FROM reservations 
             WHERE date = ? 
-            AND status != 'declined'
-            AND (
-                (start_time < ? AND end_time > ?) OR
-                (start_time < ? AND end_time > ?) OR
-                (start_time >= ? AND end_time <= ?)
-            )
+              AND status != 'declined'
+              AND (
+                  (start_time < ? AND end_time > ?) OR
+                  (start_time < ? AND end_time > ?) OR
+                  (start_time >= ? AND end_time <= ?)
+              )
         ");
         $stmt->bind_param("sssssss", $date, $end_time, $start_time, $end_time, $end_time, $start_time, $end_time);
         $stmt->execute();
@@ -106,23 +106,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
 
-        // --- Insert new reservation ---
+        // === INSERT NEW RESERVATION ===
         $stmt = $conn->prepare("
             INSERT INTO reservations 
-            (user_id, band_name, date, start_time, end_time, members, roles, type, total_price, status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')
+            (user_id, band_name, date, start_time, end_time, members, roles, type, total_price, status, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
         ");
+
+        // ✅ FIXED: Correct parameter types — user_id (int), members (int), total_price (double)
         $stmt->bind_param(
-            "isssssdsd",
-            $_SESSION['user_id'],
-            $_SESSION['band_name'],
-            $date,
-            $start_time,
-            $end_time,
-            $members,
-            $roles,
-            $type,
-            $total_price
+            "issssissd",
+            $_SESSION['user_id'],     // i
+            $_SESSION['band_name'],   // s
+            $date,                    // s
+            $start_time,              // s
+            $end_time,                // s
+            $members,                 // i
+            $roles,                   // s
+            $type,                    // s
+            $total_price              // d
         );
 
         if ($stmt->execute()) {
@@ -142,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
 } else {
-    // If accessed directly, redirect to dashboard
+    // Redirect if accessed directly
     header('Location: user_dashboard.php');
     exit();
 }
